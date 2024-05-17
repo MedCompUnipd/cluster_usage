@@ -1,0 +1,52 @@
+See https://slurm.schedmd.com/sbatch.html for detailed documentations
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        #SBATCH --help | #SBATCH -h  ->  Display help information and exit.
+#SBATCH --usage  ->  Display brief help message and exit.
+
+
+#SBATCH --job-name=job_name            | #SBATCH -J job_name
+    |-> Specify a name for the job allocation. The specified name will appear along with the job id number when querying running jobs on the system.
+#SBATCH --output=/path/to/logfile.out  | #SBATCH -o /path/to/logfile.out
+#SBATCH --error=/path/to/logfile.err   | #SBATC -e /path/to/logfile.err
+    |-> Specify the path where stdoutput and stderror will be redirected.
+#SBATCH --partition=base               | #SBACTH -p base
+    |-> Specify the partition where to queue your job.
+#SBATCH --chdir=/path/working/dir      | #SBATCH -D /path/working/dir
+    |-> Set the working directory of the batch script to directory before it is executed. The path can be specified as full path or relative path to the directory where the command is executed.
+#SBATCH --dependency=singleton         | #SBATCH -d singleton
+    |-> Useful to explicitly specify dependency between jobs. See https://slurm.schedmd.com/sbatch.html
+#SMATCH --mail-type=ALL
+    |-> An email will be sent to the mail specified in --mail-user upon job termination (with any status)
+#SBATCH --mail-user=user.name@studenti.unipd.it
+    |-> The email to which notifications will be sent
+#SBATCH --no-requeue
+    |-> If the job fails, it will NOT be requeued (PREFERRED!)
+#SBATCH --requeue
+    |-> If the job fails, it WILL be requeued (UNRECOMMENDED!)
+
+
+#SBATCH --mem=20G
+    |-> Specify the real memory required per node. This parameter would generally be used if whole nodes are allocated to jobs.
+#SBATCH --time=3-12:00:00 (days-hour:minutes:seconds)
+    |-> Set a limit on the total run time of the job allocation. If the requested time limit exceeds the partition's time limit, the job will be left in a PENDING state (possibly indefinitely).
+
+
+#SBATCH --array=0-15%4       | #SBATCH -a 0-15%4
+    |-> Submit a job array, multiple jobs to be executed with identical parameters.
+#SBATCH --nodes=1
+    |-> Number of nodes to use for the job allocation.
+#SBATCH --ntasks=1
+    |-> Sbatch does not launch tasks, it requests an allocation of resources and submits a batch script. This is to indicate that a maximum of ntasks will be executed inside the job.
+#SBATCH --ntasks-per-core=1
+    |-> It advises the allcoator that no more than ntasks can be executed in every core, therefore allocating an adequate amount of resources.
+#SBATCH --ntasks-per-node=1
+    |-> It advises the allcoator that no more than ntasks can be executed in every node, therefore allocating an adequate amount of resources.
+#SBATCH --cpus-per-task=4    | #SBATCH -c 4
+    |-> It advises the allcoator that every task uses exactly ncpus, therefore allocating an adequate amount of resources.
+#SBATCH --mem-per-cpu=8GB
+    |-> Minimum memory required per usable allocated CPU. Default units are megabytes.
+
+
+#SBATCH --begin=2025-01-01T12:00:00      | #SBATCH -b 2025-01-01T12:00:00
+    |-> Delays the jon submission until the given time.
+#SBATCH --deadline=2025-01-01T12:00:00
+    |-> Upon reach of the indicated time and date, job will be terminated regardelss of its status
