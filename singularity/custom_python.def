@@ -1,0 +1,13 @@
+Bootstrap: docker
+From: ubuntu:20.04
+Stage: build
+
+%post
+    apt-get -y upgrade
+    apt-get -y update
+    apt-get install -y python3
+    apt-get install -y python3-pip
+    pip install bio
+    pip install pandas
+    pip install tqdm
+    pip install numpy
