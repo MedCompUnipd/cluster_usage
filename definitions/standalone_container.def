@@ -1,9 +1,13 @@
-Bootstrap: docker
-From: python:3-alpine
-Stage: build
+Bootstrap: docker       # This line specifies that the base image for the container will be a Docker image
+From: python:3-alpine   # The container will be based on Alpine Linux, a lightweight Linux distribution designed for security, simplicity, and resource efficiency, and equipped with python
+Stage: build            # As usual
 
 
 %setup
+    echo "This is a scriptlet that will be executed on the host, as root, after"
+    echo "the container has been bootstrapped. In this case, it is used to create"
+    echo "all the folders that are needed for the final container to run."
+    
     mkdir -p /funtaxis-lite/src/
     mkdir -p /data/input/add_files/
     mkdir -p /data/input/go/
@@ -12,6 +16,11 @@ Stage: build
 
 
 %files
+    echo "Files are copied from the host filesystem to the container filesystem."
+    echo "Caution is needed in using relative paths for files on the host, because"
+    echo "the working directory will be set as the folder from which is executed"
+    echo "the apptainer build command."
+    
     ../input/add_files/* /data/input/add_files/
     ../src/* /funtaxis-lite/src/
     ../*.sh /funtaxis-lite/
@@ -20,15 +29,28 @@ Stage: build
 
 %post
     apk add bash build-base
+    echo "Used in Alpine Linux to install specific packages using the Alpine"
+    echo "Package Keeper (APK), which is the package manager for Alpine Linux."
+
     python -m pip install --upgrade pip
     pip3 install argparse Cython Owlready2 beautifulsoup4
 
+    echo "Then, all necessary packages are installed."
+    
 
 %environment
+    echo "The LC_ALL environment variable is used to set the locale for all locale categories to the specified value, in this case, C. Setting LC_ALL to C enforces the use of the standard "C" locale, which is a POSIX locale. This can be useful for ensuring consistent behavior across different environments, especially in terms of sorting, formatting, and character encoding. It is often used to ensure reproducibility and to avoid locale-related issues in scripts and applications that might behave differently under different locale settings."
     export LC_ALL=C
 
 
 %runscript
+    echo "Upon calling the container with apptainer exec, this will be the container"
+    echo "entry point, aka the command that will be run inside the container."
+    echo "To use a container like this, it is necessary to use the --bind option"
+    echo "which will be explained later. The $@ means that to the executed command"
+    echo "(in this case /funtaxis-lite/launcher.sh) will be passed all options"
+    echo "declared after the call to the container via apptainer exec."
+
     bash /funtaxis-lite/launcher.sh "$@"
 
 %test
@@ -39,7 +61,7 @@ Stage: build
 %labels
     Author Bianca, Ispano, Gazzola
     Version v1.0
-    MyLabel FunTaxIS-lite
+    FunTaxIS-lite
 
 
 %help
