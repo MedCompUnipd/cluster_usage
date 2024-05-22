@@ -19,5 +19,9 @@ where:
 - `container_name.sif` is the name of the resulting container which will be built;
 - `container_name.def` is the container definition file with all the instructions for apptainer to build the container.
 
-Inside the file `container_definition.txt` you can find a complete list of the possible steps to be included in the definition file, although the most common cases use few of those sections. Some practical examples are available inside the `definitions` folder of this repository.
+Inside the file `container_definition.txt` you can find a complete list of the possible steps to be included in the definition file, although the most common cases use few of those sections. Some practical examples are available inside the `definitions` folder of this repository. Each of those examples will have comments further explaining what is done whithin the definition file and the container itself.
 
+The three most common cases of building a container are the following:
+* Installing custom libraries and/or commands (e.g. python modules like [tqdm](https://pypi.org/project/tqdm/) or bash commands like [pip](https://pip.pypa.io/en/stable/) to be used for executing downstream scripts. See `definitions/custom_python.def` as an example.
+* Creating a standalone container which executes code and/or programs within its own environment. Those are typically called passing an input and some options. See `definitions/standalone_container.def` as an example.
+* Expanding an existing container adding custom libraries and/or commands, like with case 1 but not from scratch. See `definitions/expand_container.def` as an example.

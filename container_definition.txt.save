@@ -1,13 +1,5 @@
 DEF FILE BASE OS:
-This section is dedicatet to the definition of the base image which will be the base of the container.
-Bootstrap: can be "library", "docker", "localimage", and more. See official documentation for further details
-From: the value can be any valid Docker image available from a container registry like Docker Hub, a private registry, or a local repository.
-    - OS images: ubuntu:latest | ubuntu:20.04 | debian:latest | ...
-    - Programming language images: python:latest | python:3.8 | openjdk:latest | ...
-    - Database images: mysql:latest | mongo:latest | ...
-    - Specialised images: tensorflow/tensorflow:latest | jupyter/base-notebook:latest | pytorch/pytorch:latest | ...
-Stage: will always be "build"
-
+This section is used to specify the 
     Library:
         Bootstrap: library
         From: debian:9
@@ -21,7 +13,8 @@ Stage: will always be "build"
         Bootstrap: localimage
         From: /home/dave/starter.img
 
-DEFFILE SECTIONS:
+
+DEFFILE SECTIONS
 
 The following sections are presented in the order of processing, with the exception
 that labels and environment can also be manipulated in %post.
@@ -36,8 +29,6 @@ that labels and environment can also be manipulated in %post.
         echo "reference the file system location with $APPTAINER_ROOTFS."
 
     %files
-        echo "This section is used to copy files from the host filesystem to the"
-        echo "container internal filesystem"
         /path/on/host/file.txt /path/on/container/file.txt
         relative_file.txt /path/on/container/relative_file.txt
 

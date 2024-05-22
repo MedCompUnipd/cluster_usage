@@ -1,8 +1,13 @@
-Bootstrap: docker
-From: ubuntu:20.04
-Stage: build
+Bootstrap: docker       # This line specifies that the base image for the container will be a Docker image
+From: ubuntu:20.04      # The container will start with an official Ubuntu 20.04 image
+Stage: build            # As usual
 
 %post
+    echo "Since the goal of this container is to have a python environment with"
+    echo "some custom libraries, the only needed section is %post. Here we can"
+    echo "run typical ubuntu commands in order to install all the wanted elements."
+    echo "The -y option is important to automatically agree every time it is asked."
+
     apt-get -y upgrade
     apt-get -y update
     apt-get install -y python3
