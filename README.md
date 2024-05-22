@@ -15,8 +15,9 @@ Then you can run FunTaxIS-lite as follow:
 
     apptainer build <container_name.sif> <container_name.def
 
-[where:]
+where:
 - `container_name.sif` is the name of the resulting container which will be built;
 - `container_name.def` is the container definition file with all the instructions for apptainer to build the container.
+
 Inside the file `container_definition.txt` you can find a complete list of the possible steps to be included in the definition file, although the most common cases use few of those sections. Some practical examples are available inside the `definitions` folder of this repository.
 
