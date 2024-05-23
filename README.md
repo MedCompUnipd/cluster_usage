@@ -34,9 +34,10 @@ The container must be un inside the cluster using apptainer, and in most cases t
 * `apptainer exec`: allows you to execute a specific command or script inside the container, bypassing the default entry point defined by the container
 
 #### Apptainer run
-*Example:*
+**Example:**
   ```bash
   apptainer run <my_container.sif>
+  ```
 
 Here, my_container.sif will execute its default run action.
 This is the case which applies to the example container built with `definitions/standalone_container.def`: inside the container itself are the executables which will be run when calling it in this way, and eventually you will need only to complete the command with the appropriate options.
