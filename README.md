@@ -34,7 +34,7 @@ The container must be un inside the cluster using apptainer, and in most cases t
 * `apptainer exec`: allows you to execute a specific command or script inside the container, bypassing the default entry point defined by the container
 
 #### Apptainer run
-**Example:**
+*Example:*
   ```bash
   apptainer run <my_container.sif>
 
