@@ -100,3 +100,6 @@ In this example, the host directory /data is mounted to /mnt/data inside the con
    ```bash
    apptainer run --bind /data:/mnt/inputs my_container.sif -i /mnt/inputs/input_file.tsv
    ```
+
+## Writing a sbatch file
+ #TODO
