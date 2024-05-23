@@ -35,8 +35,55 @@ The container must be un inside the cluster using apptainer, and in most cases t
 
 #### Apptainer run
 **Example:**
-
   ```bash
-  apptainer run my_container.sif
+  apptainer run <my_container.sif>
 
+Here, my_container.sif will execute its default run action.
+This is the case which applies to the example container built with `definitions/standalone_container.def`: inside the container itself are the executables which will be run when calling it in this way, and eventually you will need only to complete the command with the appropriate options.
 
+**Usage:**
+  ```bash
+  apptainer run --bind </path/on/host/>:</path/inside/container> <my_container.sif> [options]
+
+For this particular example, this is the command line to execute the container. The `--bind` option pertains to the `apptainer run` command and will be expanded on later. The options after <my_container.sif> are the options which are passed to the script/program executed as entry point of the container, and depend on the options (mandatory or not) required by such script/program.
+
+#### Apptainer exec
+**Example:**
+   ```bash
+  apptainer exec <my_container.sif> ls /home
+
+This runs the ls /home command inside the my_container.sif container, listing the contents of the /home directory.
+This is the case which applies to the example containers built with `definitions/custom_python.def` or `definitions/expand_container.def`: those don't have executables inside themselves, but provide just an environment for external scripts/programs to be executed. 
+
+**Usage:**
+   ```bash
+   apptainer exec --bind </path/on/host/>:</path/inside/container> <my_container.sif> <my_script> [options]
+
+For this particular example, this is the command line to execute the container. The `--bind` option pertains to the `apptainer exec` command and will be expanded on later. The options after <my_script> are the options which are passed to the script/program (which is on the host, outside the container) executed within the container environment. Also in this case, the options depend on the options (mandatory or not) required by such script/program.
+
+#### Mechanics of the --bind option
+The `--bind` option is used to mount directories from the host file system into the container. This means that the container filesystem, which is independent from the host filesystem and cannot access it, will be able to access and modify host files and directories from within the container (useful for reading inputs and/or producing output files).
+
+**Synthax:**
+   ```bash
+   apptainer exec --bind <host_path>:<container_path> my_container.sif <command> [options]
+   apptainer run --bind <host_path>:<container_path> my_container.sif [options]
+
+In both those cases, this binding option will create a path <container_path> inside the container filesystem, which will correspond to the <host_path> inside the host filesystem: hence, the container will be able to read/write files on <host_path> via <container_path>.
+
+**Example:**
+   ```bash
+   apptainer exec --bind /data:/mnt/data my_container.sif ls /mnt/data
+
+In this example, the host directory /data is mounted to /mnt/data inside the container. The ls /mnt/data command lists the contents of the /data directory from the host, but accessed within the container.
+#### BEWARE
+* The container can only access its own filesystem and not the host's, therefore it is necessary to use the `--bind` option if the executed container needs to read/write files which are on the host.
+* The [options] passed to the container's entry point (or to the script/program executed within the container environment) must be consistent with the container filesystem. If /data/input_file.tsv is the input file on the host, the correct synthax is for the container to use it is:
+   ```bash
+   apptainer exec --bind /data:/mnt/data my_container.sif <command> -i /mnt/data/input_file.tsv
+   apptainer run --bind /data:/mnt/data my_container.sif -i /mnt/data/input_file.tsv
+
+* Be careful in how you name the bind path inside the container, because if there exist already a path with the same name inside the container, its content will be deleted and substituted with the (eventual) content of the host path used for the binding. For example, let's assume during the container definition some scripts are copied inside /mnt/data inside the container, and are used by it for the execution of its purpose. Then, assuming it needs the same input file as before, using the same command line as the previous point will result in a deletion of the scripts inside the container, because the path /mnt/data is overwritten by the binding operation. The correct way to execute the container is to use a different name for the binding, one which will not disrupt any content of its filesystem:
+   ```bash
+   apptainer exec --bind /data:/mnt/inputs my_container.sif <command> -i /mnt/inputs/input_file.tsv
+   apptainer run --bind /data:/mnt/inputs my_container.sif -i /mnt/inputs/input_file.tsv
