@@ -19,8 +19,10 @@ Here follows a breakdown of all those steps.
 
 ## Building a container
 The process of building a container is done using the command:
-
-    apptainer build <container_name.sif> <container_name.def>
+   ```bash
+   
+   apptainer build <container_name.sif> <container_name.def>
+   ```
 
 where:
 - `container_name.sif` is the name of the resulting container which will be built;
