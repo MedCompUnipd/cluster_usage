@@ -1,7 +1,13 @@
 # MedComp Cluster Instructions
-This cluster uses [SLURM](https://slurm.schedmd.com/documentation.html) as a job scheduler, meaning that every operation to be run on it must be launched using SLURM with the appropriate options. The rationile is to have a structure similar to real life instances of High Performance Computing (HPC) platforms, where standard users do not have permissions to install its own softwares and/or libraries. Nonetheless, it is possible to run any type of program requiring any type of software/libraries using containers. Each job is run calling a batch script (used to submit jobs to SLURM), inside which a container must be used to launch any program.
+On MedComp's cluster there is only a general bash environment and standard versions of the most common programming languages (python, R, C, C++, ...). This means that each user can not install custom versions of such environments, hence every script/program must be launched using a container, which is a lightweight, portable, and self-sufficient unit that packages software and its dependencies, ensuring that the application runs consistently across different computing environments. Containers encapsulate everything needed to run an application, including the code, runtime, system tools, libraries, and settings. Hence, any kind of custom applciation can be run on the cluster using the appropriate container, without the need of installing on the cluster itself all the necessary dependancies, libraries and executables.
+The cluster structure is made of six computing nodes and a frontend node, used only as access point and from which jobs can be submitted to be computed on the appropriate node. The six computing nodes are: 
+* node01 - node04: four identical nodes each with 512GB of RAM
+* fat: a node with 1TB of RAM
+* gpu: a node with 1TB of RAM and a NVIDIA A100 GPU with 40GB of dedicated RAM.
 
-The steps for the correct utilisation of the cluster for running a job are:
+To submit jobs from frontend to a node, this cluster uses [SLURM](https://slurm.schedmd.com/documentation.html) (Simple Linux Utility for Resource Management) as a job scheduler, meaning that every operation to be run on it must be launched using SLURM with the appropriate options. The rationile is to have a structure similar to real life instances of High Performance Computing (HPC) platforms, where standard users do not have permissions to install its own softwares and/or libraries. Nonetheless, it is possible to run any type of program requiring any type of software/libraries using containers. Each job is run calling a batch script (used to submit jobs to SLURM), inside which a container must be used to launch any program.
+
+The steps for the correct utilisation of the cluster for running a job are are the following:
 * [Building a container](https://apptainer.org/docs/user/main/cli/apptainer_build.html) with all the necessary software and libraries
 * Executing the container with the appropriate [apptainer](https://github.com/apptainer/apptainer) instructions, paying attention to the [binding](https://apptainer.org/docs/user/main/bind_paths_and_mounts.html) options
 * Writing a [sbatch](https://slurm.schedmd.com/sbatch.html) script with the appropriate options for SLURM to execute the container
@@ -102,4 +108,39 @@ In this example, the host directory /data is mounted to /mnt/data inside the con
    ```
 
 ## Writing a sbatch file
- #TODO
+When the container with the software is ready and needs to be executed on the cluster, it must be submitted as a job using SLURM. This means encapsulating the launch command line inside a sbatch script `my_job.sbatch`. The structure of this script is:
+* A header, usually `#!/bin/bash` which tells the interpreter to read it as a bash script
+* Some options providing details to SLURM on the job (a comprehensive list can be found in `sbatch_options.txt`)
+* The actual command line which execute the software through its container
+
+### Cluster Partitions
+The computing nodes are organised in partitions, which are groups of nodes. Partitions in SLURM are a way to group compute nodes into logical sets based on their characteristics, such as hardware configurations, intended usage, or administrative policies. When submitting a job via SLURM, you must specify which partition you wish to use, hence which node(s) do you intend to use for yout computations, according to the estimated computing power you need. On the cluster there exist 8 partitions:
+* base: this partition contains 4 nodes (node01, node02, node03, node04), and is the default partition on where your jobs will be submitted if not otherwise indicated
+* all: this group is populated by all 6 nodes (node01, node02, node03, node04, fat, gpu), and slurm will submit your job on the one whose resources are most available
+* node01 - node04: each of those four partitions is a group with just the corresponding node (useful if you know your job won't require more than one node)
+* bigmem: a partition populated only by the node fat
+* gpu: a partition populated only by the node gpu
+When a job is submitted, SLURM's scheduler looks for available resources that match the job’s requirements within the specified partition(s). Jobs are prioritized based on factors like partition configuration, job size, job age (how long it has been waiting), and user fair-share policies. SLURM uses these priorities to decide the order in which jobs are scheduled.
+
+### Submitting a job
+Inside the `slurm` folder can be found some examples of sbatch files, each with an explanation of the options used. Although the variety of options which can be provided to SLURM is wide, some are commonly used such setting the job name, asking for a partition of the cluster where to run the job and providing the path of two log files where slurm will redirect stdout and stderr coming from the job. An example is:
+   ```bash
+   #!/bin/bash
+
+   #SBATCH --job-name=prova
+   #SBATCH --output=/path/to/logs/prova.out
+   #SBATCH --error=/path/to/logs/prova.err
+   #SBATCH --partition=bigmem
+   #SBATCH --no-requeue
+
+   apptainer exec --bind /path/to/data:/data /path/to/containers/my_container.sif python3 -c print("hello world!")
+   ```
+This is the content of a sbatch file asking SLURM to create a job named "prova" to be submitted on the "bigmem" partition (aka node fat), to redirect all stdout to he logfile "/path/to/logs/prova.out" and all stderr to the logfile "/path/to/logs/prova.err". The --no-requeue option is used to avoid SLURM requeueing the job unpon failure, which can be bad practice if the job fails due to bugs or internal problems.
+
+### Example workflow
+* Submit Job: A user submits a job specifying the desired partition. Command: `sbatch my_sbatch.sbatch`
+* Queue Placement: The job is placed in the queue of the specified partition(s). To monitor the current queue for the whole cluster, use command: `squeue`. To monitor the current status of the partitions for the whole cluster, use command: `sinfo`
+* Resource Allocation: SLURM matches the job's requirements with available resources in the partition.
+* Job Execution: Once resources are available, SLURM allocates the nodes and starts the job.
+* Job Monitoring: SLURM monitors the job, ensuring it adheres to the partition’s resource limits and policies. To monitor the status of your jobs and its resouces utilisation, use command `seff <job_id>`. The <job_id> can be obtained via `squeue`
+* Completion: Upon completion, resources are released, and the job's status is updated.
