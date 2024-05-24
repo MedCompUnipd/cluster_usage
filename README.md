@@ -13,15 +13,14 @@ To submit jobs from frontend to a node, this cluster uses [SLURM](https://slurm.
 The steps for the correct utilisation of the cluster for running a job are are the following:
 * [Building a container](https://apptainer.org/docs/user/main/cli/apptainer_build.html) with all the necessary software and libraries
 * Executing the container with the appropriate [apptainer](https://github.com/apptainer/apptainer) instructions, paying attention to the [binding](https://apptainer.org/docs/user/main/bind_paths_and_mounts.html) options
-* Writing a [sbatch](https://slurm.schedmd.com/sbatch.html) script with the appropriate options for SLURM to execute the container
+* Writing a [sbatch](https://slurm.schedmd.com/sbatch.html) script with the appropriate options for SLURM to run the software on some computing node
 
 Here follows a breakdown of all those steps.
 
 ## Building a container
 The process of building a container is done using the command:
-Then you can run FunTaxIS-lite as follow:
 
-    apptainer build <container_name.sif> <container_name.def
+    apptainer build <container_name.sif> <container_name.def>
 
 where:
 - `container_name.sif` is the name of the resulting container which will be built;
