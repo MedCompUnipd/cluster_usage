@@ -1,5 +1,7 @@
 # MedComp Cluster Instructions
-On MedComp's cluster there is only a general bash environment and standard versions of the most common programming languages (python, R, C, C++, ...). This means that each user can not install custom versions of such environments, hence every script/program must be launched using a container, which is a lightweight, portable, and self-sufficient unit that packages software and its dependencies, ensuring that the application runs consistently across different computing environments. Containers encapsulate everything needed to run an application, including the code, runtime, system tools, libraries, and settings. Hence, any kind of custom applciation can be run on the cluster using the appropriate container, without the need of installing on the cluster itself all the necessary dependancies, libraries and executables.
+On MedComp's cluster the policy is not to grant users the direct permissions to install their own versions of any kind of software (such as whole programming langiages, libraries, executables). This means that each user can not install custom versions of such environments, hence every script/program must be launched using a container, which is a lightweight, portable, and self-sufficient unit that packages software and its dependencies, ensuring that the application runs consistently across different computing environments. Containers encapsulate everything needed to run an application, including the code, runtime, system tools, libraries, and settings. Hence, any kind of custom applciation can be run on the cluster using the appropriate container, without the need of installing on the cluster itself all the necessary dependancies, libraries and executables.
+
+## Cluster structure
 The cluster structure is made of six computing nodes and a frontend node, used only as access point and from which jobs can be submitted to be computed on the appropriate node. The six computing nodes are: 
 * node01 - node04: four identical nodes each with 512GB of RAM
 * fat: a node with 1TB of RAM
@@ -7,6 +9,7 @@ The cluster structure is made of six computing nodes and a frontend node, used o
 
 To submit jobs from frontend to a node, this cluster uses [SLURM](https://slurm.schedmd.com/documentation.html) (Simple Linux Utility for Resource Management) as a job scheduler, meaning that every operation to be run on it must be launched using SLURM with the appropriate options. The rationile is to have a structure similar to real life instances of High Performance Computing (HPC) platforms, where standard users do not have permissions to install its own softwares and/or libraries. Nonetheless, it is possible to run any type of program requiring any type of software/libraries using containers. Each job is run calling a batch script (used to submit jobs to SLURM), inside which a container must be used to launch any program.
 
+## Step-by-step job submission
 The steps for the correct utilisation of the cluster for running a job are are the following:
 * [Building a container](https://apptainer.org/docs/user/main/cli/apptainer_build.html) with all the necessary software and libraries
 * Executing the container with the appropriate [apptainer](https://github.com/apptainer/apptainer) instructions, paying attention to the [binding](https://apptainer.org/docs/user/main/bind_paths_and_mounts.html) options
