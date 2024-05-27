@@ -24,7 +24,7 @@ if __name__ == "__main__":
         raise FileNotFoundError
 
     out_path, basename = os.path.split(output_file)
-    if not os.path.exists(output_path):
+    if not os.path.exists(out_path):
         print(f'WARNING: output directory {out_path} does not exist, creating it', file=sys.stderr)
         os.makedirs(out_path)
 

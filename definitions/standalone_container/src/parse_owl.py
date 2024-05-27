@@ -2,7 +2,7 @@
 
 import argparse
 import os
-from owlready2 import *
+from owlLibrary2 import *
 
 
 def get_args():
