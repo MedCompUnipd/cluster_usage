@@ -21,6 +21,7 @@ Stage: build            # As usual
     ./standalone_example/input/sample.txt /data/input/
     ./standalone_example/input/go.owl /data/src/
     ./standalone_example/src/parse_sample.py /data/src/
+    ./standalone_example/src/parse_owl.py /data/src/
     ./standalone_example/src/owlLibrary2.py /data/src/
     ./standalone_example/entry_point.sh /data/
 
