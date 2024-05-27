@@ -27,6 +27,11 @@ where:
 - `container_name.sif` is the name of the resulting container which will be built;
 - `container_name.def` is the container definition file with all the instructions for apptainer to build the container.
 
+NB: to run this command (or the equivalent but obsolete `apptainer build <--->`) you must have root permissions, therefore it CANNOT be run on the cluster itself. Either use another machine or yout local computer. The resulting sif can then be copied to wherever you want on the cluster via scp:
+   ```bash   
+   scp /path/to/built/container.sif user.name@medcomp.medicina.unipd.it:/path/inside/cluster/
+   ```
+
 Inside the file `container_definition.txt` you can find a complete list of the possible steps to be included in the definition file, although the most common cases use few of those sections. Some practical examples are available inside the `definitions` folder of this repository. Each of those examples will have comments further explaining what is done whithin the definition file and the container itself.
 
 The three most common cases of building a container are the following:
@@ -136,7 +141,7 @@ Inside the `slurm` folder can be found some examples of sbatch files, each with 
    #SBATCH --partition=bigmem
    #SBATCH --no-requeue
 
-   apptainer exec --bind /path/to/data:/data /path/to/containers/my_container.sif python3 -c print("hello world!")
+   apptainer exec --bind /path/to/data/:/data/ /path/to/containers/my_container.sif python3 -c print("hello world!")
    ```
 This is the content of a sbatch file asking SLURM to create a job named "prova" to be submitted on the "bigmem" partition (aka node fat), to redirect all stdout to he logfile "/path/to/logs/prova.out" and all stderr to the logfile "/path/to/logs/prova.err". The --no-requeue option is used to avoid SLURM requeueing the job unpon failure, which can be bad practice if the job fails due to bugs or internal problems.
 
@@ -147,3 +152,42 @@ This is the content of a sbatch file asking SLURM to create a job named "prova" 
 * Job Execution: Once resources are available, SLURM allocates the nodes and starts the job.
 * Job Monitoring: SLURM monitors the job, ensuring it adheres to the partition’s resource limits and policies. To monitor the status of your jobs and its resouces utilisation, use command `seff <job_id>`. The <job_id> can be obtained via `squeue`
 * Completion: Upon completion, resources are released, and the job's status is updated.
+
+
+## Practical Examples
+Now, for clarity some practical examples of the whole workflow (from the container creation to the slurm execution) will be probvided.
+
+### 1) Custom Python Usage
+To be executed on a machine where you yield root permissions:
+   ```bash
+   cd definitions/custom_python
+   sudo apptainer build custom_python.sif custom_python.def
+   scp custom_python.sif user.name@www.medcomp.medicina.unipd.it:/path/to/sifs/custom_python.sif
+   ```
+
+To be included in a sbatch file using the appropriate SLURM options:
+   ```bash
+   # If the paths are left unchanged, this can be run from definitions/custom_python as a test.
+
+   apptainer exec --bind ./:/data/ python3 /data/src/dummy_script.py
+   ```
+
+
+### 3) Standalone Container
+To be executed on a machine where you yield root permissions:
+   ```bash
+   cd definitions/standalone_container
+   apptainer build standalone_container.sif standalone_container.def
+   scp standalone_container.sif user.name@www.medcomp.medicina.unipd.it:/path/to/sifs/custom_python.sif
+   ```
+
+To be included in a sbatch file using the appropriate SLURM options
+   ```bash
+   # If the paths are left unchanged, this can be run from definitions/standalone_container as a test.
+   # NB: the go.owl file must be downloaded, see instructions in definitions/standalone_container/input/download_owl.txt
+
+   apptainer run --bind ./:/data/ standalone_container.sif
+   # or:
+   # apptainer run --bind ./:/data/ standalone_container.sif -o /data/output/my_output.txt
+   # apptainer run --bind ./:/data/ --bind /path/to/my_owl/:/data/owl/ standalone_container.sif -o /data/output/my_output.txt -w /data/owl/go.owl
+   ```

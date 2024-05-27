@@ -15,4 +15,4 @@ Stage: build            # As usual
     apt-get install -y python3
     apt-get install -y python3-pip
     pip install tqdm
-    pip install numpynumpy
+    pip install numpy

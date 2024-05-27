@@ -1,1 +1,2 @@
-definitions/standalone_container/input/go.owl
+*.owl
+*.sif
