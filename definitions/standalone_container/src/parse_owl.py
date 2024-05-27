@@ -22,9 +22,9 @@ if __name__ == "__main__":
         raise FileNotFoundError
 
     owl = GoOwl(owl_file, namespace="http://purl.obolibrary.org/obo/")
-    bpo = set(owl.go_descentants_by_ontology_using_valid_edges('GO_0008150'))
-    mfo = set(owl.go_descentants_by_ontology_using_valid_edges('GO_0003674'))
-    cco = set(owl.go_descentants_by_ontology_using_valid_edges('GO_0005575'))
+    bpo = set(owl.go_descendants_by_ontology_using_valid_edges('GO_0008150'))
+    mfo = set(owl.go_descendants_by_ontology_using_valid_edges('GO_0003674'))
+    cco = set(owl.go_descendants_by_ontology_using_valid_edges('GO_0005575'))
 
     print('ONTOLOGY SUMMARY\n')
     print(f'Biological Process ontology has {len(bpo)} go terms')

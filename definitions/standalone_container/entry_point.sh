@@ -60,12 +60,7 @@ while [[ $# -gt 0 ]]; do
 
         -o|--output)
             if [[ $# -gt 1 && ! $2 == -* ]]; then
-                if [ -f "$2" ]; then
-                    input_file="$2"
-                else
-                    echo "This argument required a file, not a folder!"
-                    usage
-                fi
+                output_file="$2"
             else
                 echo "Expected argument after option -o/--output!"
                 usage
