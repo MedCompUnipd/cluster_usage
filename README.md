@@ -19,15 +19,19 @@ Here follows a breakdown of all those steps.
 
 ## Building a container
 The process of building a container is done using the command:
-   ```bash   
-   apptainer build <container_name.sif> <container_name.def>
+   ```bash
+   # NB: for big containers, a custom temporary directory can be set in order to avoid OOM (out ot mermory) errors:
+   # export SINGULARITY_TMPDIR=/path/to/custom_temporary/
+
+   # NB: to build a container you must have root permissions or be a sudoer!
+   sudo apptainer build <container_name.sif> <container_name.def>
    ```
 
 where:
 - `container_name.sif` is the name of the resulting container which will be built;
 - `container_name.def` is the container definition file with all the instructions for apptainer to build the container.
 
-NB: to run this command (or the equivalent but obsolete `apptainer build <--->`) you must have root permissions, therefore it CANNOT be run on the cluster itself. Either use another machine or yout local computer. The resulting sif can then be copied to wherever you want on the cluster via scp:
+WARNING: to run this command (or the equivalent but obsolete `apptainer build <--->`) you must have root permissions, therefore it CANNOT be run on the cluster itself. Either use another machine or yout local computer. The resulting sif can then be copied to wherever you want on the cluster via scp:
    ```bash   
    scp /path/to/built/container.sif user.name@medcomp.medicina.unipd.it:/path/inside/cluster/
    ```
@@ -169,9 +173,26 @@ To be included in a sbatch file using the appropriate SLURM options:
    ```bash
    # If the paths are left unchanged, this can be run from definitions/custom_python as a test.
 
-   apptainer exec --bind ./:/data/ python3 /data/src/dummy_script.py
+   apptainer exec --bind ./:/data/ custom_python.sif python3 /data/src/dummy_script.py
+   # or (to change the number of interations to 20 from the default 10):
+   # apptainer exec --bind ./:/data/ custom_python.sif python3 /data/src/dummy_script.py -n 20 
    ```
 
+### 2) Expand Container Usage
+To be executed on a machine where you yield root permissions:
+   ```bash
+   cd definitions/expand_container
+   sudo apptainer build expand_python.sif expand_python.def
+   scp expand_container.sif user.name@www.medcomp.medicina.unipd.it:/path/to/sifs/custom_python.sif
+   ```
+
+To be included in a sbatch file using the appropriate SLURM options:
+   ```bash
+   # If the paths are left unchanged, this can be run from definitions/expand_container as a test.
+   # NB: to get GPU usage via apptainer, the --nv options must be included
+
+   apptainer exec --nv --bind ./:/data/ expand_python.sif python3 /data/src/dummy_script.py
+   ```
 
 ### 3) Standalone Container
 To be executed on a machine where you yield root permissions:
