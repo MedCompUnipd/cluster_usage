@@ -18,12 +18,12 @@ Stage: build            # As usual
     echo "the working directory will be set as the folder from which is executed"
     echo "the apptainer build command."
     
-    ./standalone_example/input/sample.txt /data/input/
-    ./standalone_example/input/go.owl /data/src/
-    ./standalone_example/src/parse_sample.py /data/src/
-    ./standalone_example/src/parse_owl.py /data/src/
-    ./standalone_example/src/owlLibrary2.py /data/src/
-    ./standalone_example/entry_point.sh /data/
+    ./standalone_container/input/sample.txt /data/input/
+    ./standalone_container/input/go.owl /data/src/
+    ./standalone_container/src/parse_sample.py /data/src/
+    ./standalone_container/src/parse_owl.py /data/src/
+    ./standalone_container/src/owlLibrary2.py /data/src/
+    ./standalone_container/entry_point.sh /data/
 
 
 %post

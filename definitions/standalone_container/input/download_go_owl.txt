@@ -1,0 +1,2 @@
+To download:
+wget http://purl.obolibrary.org/obo/go.owl
