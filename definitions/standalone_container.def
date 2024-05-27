@@ -8,11 +8,8 @@ Stage: build            # As usual
     echo "the container has been bootstrapped. In this case, it is used to create"
     echo "all the folders that are needed for the final container to run."
     
-    mkdir -p /funtaxis-lite/src/
-    mkdir -p /data/input/add_files/
-    mkdir -p /data/input/go/
-    mkdir -p /data/input/goa/
-    mkdir -p /data/input/taxonomy/
+    mkdir -p /data/src/
+    mkdir -p /data/input/
 
 
 %files
@@ -21,10 +18,11 @@ Stage: build            # As usual
     echo "the working directory will be set as the folder from which is executed"
     echo "the apptainer build command."
     
-    ../input/add_files/* /data/input/add_files/
-    ../src/* /funtaxis-lite/src/
-    ../*.sh /funtaxis-lite/
-    ./*.sh /funtaxis-lite/
+    ./standalone_example/input/sample.txt /data/input/
+    ./standalone_example/input/go.owl /data/src/
+    ./standalone_example/src/parse_sample.py /data/src/
+    ./standalone_example/src/owlLibrary2.py /data/src/
+    ./standalone_example/entry_point.sh /data/
 
 
 %post
@@ -33,13 +31,21 @@ Stage: build            # As usual
     echo "Package Keeper (APK), which is the package manager for Alpine Linux."
 
     python -m pip install --upgrade pip
-    pip3 install argparse Cython Owlready2 beautifulsoup4
+    pip3 install argparse Cython Owlready2
 
     echo "Then, all necessary packages are installed."
     
 
 %environment
-    echo "The LC_ALL environment variable is used to set the locale for all locale categories to the specified value, in this case, C. Setting LC_ALL to C enforces the use of the standard "C" locale, which is a POSIX locale. This can be useful for ensuring consistent behavior across different environments, especially in terms of sorting, formatting, and character encoding. It is often used to ensure reproducibility and to avoid locale-related issues in scripts and applications that might behave differently under different locale settings."
+    echo "The LC_ALL environment variable is used to set the locale for all locale"
+    echo "categories to the specified value, in this case, C. Setting LC_ALL to C"
+    echo "enforces the use of the standard "C" locale, which is a POSIX locale."
+    echo "This can be useful for ensuring consistent behavior across different"
+    echo "environments, especially in terms of sorting, formatting, and character"
+    echo "encoding. It is often used to ensure reproducibility and to avoid locale-related"
+    echo "issues in scripts and applications that might behave differently under different"
+    echo "locale settings."
+
     export LC_ALL=C
 
 
@@ -51,19 +57,13 @@ Stage: build            # As usual
     echo "(in this case /funtaxis-lite/launcher.sh) will be passed all options"
     echo "declared after the call to the container via apptainer exec."
 
-    bash /funtaxis-lite/launcher.sh "$@"
+    bash /data/entry_point.sh "$@"
 
 %test
     python3 --version
-    python3 -c 'import argparse, owlready2, bs4'
+    python3 -c 'import argparse, owlready2'
 
 
 %labels
-    Author Bianca, Ispano, Gazzola
+    Author Ispano
     Version v1.0
-    FunTaxIS-lite
-
-
-%help
-    Container with FunTaxIS-lite.
-    This installation is based on Python3 and Alpine OS.

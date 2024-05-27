@@ -1,10 +1,10 @@
-Bootstrap: docker       # This line specifies that the base image for the container will be a Docker image
+Bootstrap: docker                                   # This line specifies that the base image for the container will be a Docker image
 From: nvcr.io/nvidia/tensorflow:23.12-tf2-py3       # The base image will be a pre-built container provided by NVIDIA as NGC (Nvidia Gpu Cloud). The base operating system will be the same as the original container, in this case some version of Ubuntu. 
+Stage: build                                        # As usual
+
 
 %post
     echo "Since the base OS of the container is Ubuntu, classic ubuntu commands"
     echo "can be used to expand the original container with the desired libraries."
     
     pip install tqdm
-    pip install pyyaml
-    pip install h5py
