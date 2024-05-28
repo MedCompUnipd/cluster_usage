@@ -1,13 +1,20 @@
 # MedComp Cluster Instructions
-On MedComp's cluster the policy is not to grant users the direct permissions to install their own versions of any kind of software (such as whole programming langiages, libraries, executables). This means that each user can not install custom versions of such environments, hence every script/program must be launched using a container, which is a lightweight, portable, and self-sufficient unit that packages software and its dependencies, ensuring that the application runs consistently across different computing environments. Containers encapsulate everything needed to run an application, including the code, runtime, system tools, libraries, and settings. Hence, any kind of custom applciation can be run on the cluster using the appropriate container, without the need of installing on the cluster itself all the necessary dependancies, libraries and executables.
+On MedComp's cluster, users are not granted direct permissions to install their own versions of software, including programming languages, libraries, and executables. Therefore, each user must use containers to launch scripts and programs.
 
-## Cluster structure
-The cluster structure is made of six computing nodes and a frontend node, used only as access point and from which jobs can be submitted to be computed on the appropriate node. The six computing nodes are: 
-* node01 - node04: four identical nodes each with 512GB of RAM
-* fat: a node with 1TB of RAM
-* gpu: a node with 1TB of RAM and a NVIDIA A100 GPU with 40GB of dedicated RAM.
+A container is a lightweight, portable, and self-sufficient unit that packages software and its dependencies, ensuring that applications run consistently across different computing environments. Containers encapsulate everything needed to run an application, including code, runtime, system tools, libraries, and settings.
 
-To submit jobs from frontend to a node, this cluster uses [SLURM](https://slurm.schedmd.com/documentation.html) (Simple Linux Utility for Resource Management) as a job scheduler, meaning that every operation to be run on it must be launched using SLURM with the appropriate options. The rationile is to have a structure similar to real life instances of High Performance Computing (HPC) platforms, where standard users do not have permissions to install its own softwares and/or libraries. Nonetheless, it is possible to run any type of program requiring any type of software/libraries using containers. Each job is run calling a batch script (used to submit jobs to SLURM), inside which a container must be used to launch any program.
+By using containers, users can run any custom application on the cluster without needing to install all the necessary dependencies, libraries, and executables directly on the cluster.
+
+## Cluster Structure
+The cluster is composed of six computing nodes and a frontend node. The frontend node serves as an access point and is used for submitting jobs to the appropriate computing nodes. The six computing nodes are as follows:
+
+- **node01 - node04**: Four identical nodes, each with 512GB of RAM.
+- **fat**: A node with 1TB of RAM.
+- **gpu**: A node with 1TB of RAM and an NVIDIA A100 GPU with 40GB of dedicated RAM.
+
+To submit jobs from the frontend to a node, the cluster uses [SLURM](https://slurm.schedmd.com/documentation.html) (Simple Linux Utility for Resource Management) as a job scheduler. This means every operation must be launched using SLURM with the appropriate options. The rationale behind this structure is to mimic real-life High Performance Computing (HPC) platforms, where standard users do not have permissions to install their own software or libraries.
+
+Despite these restrictions, users can run any type of program requiring any software or libraries using containers. Each job is submitted via a batch script (used to submit jobs to SLURM), within which a container must be used to launch the program.
 
 ## Step-by-step job submission
 The steps for the correct utilisation of the cluster for running a job are are the following:
