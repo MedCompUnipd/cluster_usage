@@ -15,9 +15,9 @@
 # The options below are optional, but it is a good practice to include them to give SLURM a
 # description of the resources to be allocated for the job. In this case, since it is a dummy
 # example, the resources asked are very limited: a sngle cpu in one node, expecting to execute
-# one single task (the script is not parallelised) using no more than 1GB RAM memory.
+# one single task (the script is not parallelised) using no more than 5GB RAM memory.
 
-#SBATCH --mem=1G
+#SBATCH --mem=5G
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -26,7 +26,9 @@
 #NB: It is good practice to use absolute host paths for the binding option
 #NB: The container must be called using the host path
 #NB: The options to the container must be passed using container paths
+#NB: The file go.owl must be downloaded via wget, instructions are in definitions/standalone_container/input/download_owl.txt
 
-apptainer exec --bind ./:/data/ custom_python.sif python3 /data/src/dummy_script.py
-# or (to change the number of interations to 20 from the default 10):
-# apptainer exec --bind ./:/data/ custom_python.sif python3 /data/src/dummy_script.py -n 20
+apptainer run --bind ./:/data/ standalone_container.sif
+# or:
+# apptainer run --bind ./:/data/ standalone_container.sif -o /data/output/my_output.txt
+# apptainer run --bind ./:/data/ --bind /path/to/my_owl/:/data/owl/ standalone_container.sif -o     /data/output/my_output.txt -w /data/owl/go.owl
