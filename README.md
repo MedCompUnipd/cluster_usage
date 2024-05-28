@@ -38,7 +38,7 @@ where:
 - `container_name.sif` is the name of the resulting container which will be built;
 - `container_name.def` is the container definition file with all the instructions for apptainer to build the container.
 
-WARNING: to run this command (or the equivalent but obsolete `apptainer build <--->`) you must have root permissions, therefore it CANNOT be run on the cluster itself. Either use another machine or yout local computer. The resulting sif can then be copied to wherever you want on the cluster via scp:
+WARNING: to run this command (or the equivalent but obsolete `singularity build <--->`) you must have root permissions, therefore it CANNOT be run on the cluster itself. Either use another machine or yout local computer. The resulting sif can then be copied to wherever you want on the cluster via scp:
    ```bash   
    scp /path/to/built/container.sif user.name@medcomp.medicina.unipd.it:/path/inside/cluster/
    ```
@@ -71,7 +71,7 @@ Usage:
   apptainer run --bind </path/on/host/>:</path/inside/container> <my_container.sif> [options]
   ```
 
-For this particular example, this is the command line to execute the container. The `--bind` option pertains to the `apptainer run` command and will be expanded on later. The options after <my_container.sif> are the options which are passed to the script/program executed as entry point of the container, and depend on the options (mandatory or not) required by such script/program.
+For this particular example, this is the command line to execute the container. The `--bind` option pertains to the `apptainer run` command and will be expanded on later. The options after `<my_container.sif>` are the options which are passed to the script/program executed as entry point of the container, and depend on the options (mandatory or not) required by such script/program.
 
 ### Apptainer exec
 Example:
@@ -79,7 +79,7 @@ Example:
    apptainer exec <my_container.sif> ls /home
    ```
 
-This runs the ls /home command inside the my_container.sif container, listing the contents of the /home directory.
+This runs the `ls /home` command inside the `my_container.sif` container, listing the contents of the `/home` directory. Note that a container has its own filesystem and this will list the contant of the `/home` directory inside the container, and not the content of the `/home` directory of the host's filesystem.
 This is the case which applies to the example containers built with `definitions/custom_python.def` or `definitions/expand_container.def`: those don't have executables inside themselves, but provide just an environment for external scripts/programs to be executed. 
 
 Usage:
@@ -87,12 +87,12 @@ Usage:
    apptainer exec --bind </path/on/host/>:</path/inside/container> <my_container.sif> <my_script> [options]
    ```
 
-For this particular example, this is the command line to execute the container. The `--bind` option pertains to the `apptainer exec` command and will be expanded on later. The options after <my_script> are the options which are passed to the script/program (which is on the host, outside the container) executed within the container environment. Also in this case, the options depend on the options (mandatory or not) required by such script/program.
+For this particular example, this is the command line to execute the container. The `--bind` option pertains to the `apptainer exec` command and will be expanded on later. The options after `<my_script>` are the options which are passed to the script/program (which is on the host, outside the container) executed within the container environment. Also in this case, the options depend on the options (mandatory or not) required by such script/program.
 
 ## Mechanics of the --bind option
 The `--bind` option is used to mount directories from the host file system into the container. This means that the container filesystem, which is independent from the host filesystem and cannot access it, will be able to access and modify host files and directories from within the container (useful for reading inputs and/or producing output files).
 
-Synthax:
+Syntax:
    ```bash
    apptainer exec --bind <host_path>:<container_path> my_container.sif <command> [options]
    ```
@@ -100,17 +100,17 @@ Synthax:
    apptainer run --bind <host_path>:<container_path> my_container.sif [options]
    ```
 
-In both those cases, this binding option will create a path <container_path> inside the container filesystem, which will correspond to the <host_path> inside the host filesystem: hence, the container will be able to read/write files on <host_path> via <container_path>.
+In both those cases, this binding option will create a path `<container_path>` inside the container filesystem, which will correspond to the `<host_path>` inside the host filesystem: hence, the container will be able to read/write files on `<host_path>` via `<container_path>`.
 
 Example:
    ```bash
    apptainer exec --bind /data:/mnt/data my_container.sif ls /mnt/data
    ```
 
-In this example, the host directory /data is mounted to /mnt/data inside the container. The ls /mnt/data command lists the contents of the /data directory from the host, but accessed within the container.
+In this example, the host directory `/data` is mounted to `/mnt/data` inside the container. The ls `/mnt/data` command lists the contents of the `/data` directory from the host, but accessed within the container.
 ### BEWARE
 * The container can only access its own filesystem and not the host's, therefore it is necessary to use the `--bind` option if the executed container needs to read/write files which are on the host.
-* The [options] passed to the container's entry point (or to the script/program executed within the container environment) must be consistent with the container filesystem. If /data/input_file.tsv is the input file on the host, the correct synthax is for the container to use it is:
+* The [options] passed to the container's entry point (or to the script/program executed within the container environment) must be consistent with the container filesystem. If `/data/input_file.tsv` is the input file on the host, the correct syntax is for the container to use it is:
    ```bash
    apptainer exec --bind /data:/mnt/data my_container.sif <command> -i /mnt/data/input_file.tsv
    ```
@@ -118,7 +118,7 @@ In this example, the host directory /data is mounted to /mnt/data inside the con
    apptainer run --bind /data:/mnt/data my_container.sif -i /mnt/data/input_file.tsv
    ```
 
-* Be careful in how you name the bind path inside the container, because if there exist already a path with the same name inside the container, its content will be deleted and substituted with the (eventual) content of the host path used for the binding. For example, let's assume during the container definition some scripts are copied inside /mnt/data inside the container, and are used by it for the execution of its purpose. Then, assuming it needs the same input file as before, using the same command line as the previous point will result in a deletion of the scripts inside the container, because the path /mnt/data is overwritten by the binding operation. The correct way to execute the container is to use a different name for the binding, one which will not disrupt any content of its filesystem:
+* Be careful in how you name the bind path inside the container, because if there exist already a path with the same name inside the container, its content will be deleted and substituted with the (eventual) content of the host path used for the binding. For example, let's assume during the container definition some scripts are copied inside `/mnt/data` inside the container, and are used by it for the execution of its purpose. Then, assuming it needs the same input file as before, using the same command line as the previous point will result in a deletion of the scripts inside the container, because the path `/mnt/data` is overwritten by the binding operation with the content of the hoet's `/data`. The correct way to execute the container is to use a different name for the binding, one which will not disrupt any content of its filesystem:
    ```bash
    apptainer exec --bind /data:/mnt/inputs my_container.sif <command> -i /mnt/inputs/input_file.tsv
    ```
@@ -128,7 +128,7 @@ In this example, the host directory /data is mounted to /mnt/data inside the con
 
 ## Writing a sbatch file
 When the container with the software is ready and needs to be executed on the cluster, it must be submitted as a job using SLURM. This means encapsulating the launch command line inside a sbatch script `my_job.sbatch`. The structure of this script is:
-* A header, usually `#!/bin/bash` which tells the interpreter to read it as a bash script
+* A header, usually `#!/usr/bin/bash` which tells the interpreter to read it as a bash script
 * Some options providing details to SLURM on the job (a comprehensive list can be found in `sbatch_options.txt`)
 * The actual command line which execute the software through its container
 
@@ -142,7 +142,7 @@ The computing nodes are organised in partitions, which are groups of nodes. Part
 When a job is submitted, SLURM's scheduler looks for available resources that match the job’s requirements within the specified partition(s). Jobs are prioritized based on factors like partition configuration, job size, job age (how long it has been waiting), and user fair-share policies. SLURM uses these priorities to decide the order in which jobs are scheduled.
 
 ### Submitting a job
-Inside the `slurm` folder can be found some examples of sbatch files, each with an explanation of the options used. Although the variety of options which can be provided to SLURM is wide, some are commonly used such setting the job name, asking for a partition of the cluster where to run the job and providing the path of two log files where slurm will redirect stdout and stderr coming from the job. An example is:
+Inside the `slurm/` folder can be found some examples of sbatch files, each with an explanation of the options used. Although the variety of options which can be provided to SLURM is wide, some are commonly used such setting the job name, asking for a partition of the cluster where to run the job and providing the path of two log files where slurm will redirect stdout and stderr coming from the job. An example is:
    ```bash
    #!/bin/bash
 
@@ -154,14 +154,14 @@ Inside the `slurm` folder can be found some examples of sbatch files, each with 
 
    apptainer exec --bind /path/to/data/:/data/ /path/to/containers/my_container.sif python3 -c print("hello world!")
    ```
-This is the content of a sbatch file asking SLURM to create a job named "prova" to be submitted on the "bigmem" partition (aka node fat), to redirect all stdout to he logfile "/path/to/logs/prova.out" and all stderr to the logfile "/path/to/logs/prova.err". The --no-requeue option is used to avoid SLURM requeueing the job unpon failure, which can be bad practice if the job fails due to bugs or internal problems.
+This is the content of a sbatch file asking SLURM to create a job named "prova" to be submitted on the "bigmem" partition (aka node fat), to redirect all stdout to he logfile `/path/to/logs/prova.out` and all stderr to the logfile `/path/to/logs/prova.err`. The `--no-requeue` option is used to avoid SLURM requeueing the job unpon failure, which can be bad practice if the job fails due to bugs or internal problems.
 
 ### Example workflow
 * Submit Job: A user submits a job specifying the desired partition. Command: `sbatch my_sbatch.sbatch`
 * Queue Placement: The job is placed in the queue of the specified partition(s). To monitor the current queue for the whole cluster, use command: `squeue`. To monitor the current status of the partitions for the whole cluster, use command: `sinfo`
 * Resource Allocation: SLURM matches the job's requirements with available resources in the partition.
 * Job Execution: Once resources are available, SLURM allocates the nodes and starts the job.
-* Job Monitoring: SLURM monitors the job, ensuring it adheres to the partition’s resource limits and policies. To monitor the status of your jobs and its resouces utilisation, use command `seff <job_id>`. The <job_id> can be obtained via `squeue`
+* Job Monitoring: SLURM monitors the job, ensuring it adheres to the partition’s resource limits and policies. To monitor the status of your jobs and its resouces utilisation, use command `seff <job_id>`. The `<job_id>` can be obtained via `squeue`
 * Completion: Upon completion, resources are released, and the job's status is updated.
 
 
