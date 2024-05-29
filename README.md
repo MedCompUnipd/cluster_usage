@@ -152,6 +152,10 @@ Inside the `slurm/` folder can be found some examples of sbatch files, each with
    #SBATCH --partition=bigmem
    #SBATCH --no-requeue
 
+   # NB: the ulimit command with the -v option sets a limit for the memory utilisation of the job submitted via sbatch.
+   # The memory limit must be given in kilo-bytes: this example sets the memory limit for 20 giga-bytes.
+   ulimit -v 20971520
+
    apptainer exec --bind /path/to/data/:/data/ /path/to/containers/my_container.sif python3 -c print("hello world!")
    ```
 This is the content of a sbatch file asking SLURM to create a job named "prova" to be submitted on the "bigmem" partition (aka node fat), to redirect all stdout to he logfile `/path/to/logs/prova.out` and all stderr to the logfile `/path/to/logs/prova.err`. The `--no-requeue` option is used to avoid SLURM requeueing the job unpon failure, which can be bad practice if the job fails due to bugs or internal problems.
