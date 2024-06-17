@@ -56,6 +56,7 @@ Once the container is built and the `container_name.sif` image is created, the n
 There are repositories where developers make pre-built containers available for use. Two examples are cited below:
 * [Red Hat](https://quay.io/organization/biocontainers)
 * [Docker Hub](https://hub.docker.com/)
+
 Pre-built sifs can be downloaded from these repositories with one simple command:
 ```bash
 singularity build <container_name.sif> docker://<sif tag from repository>
