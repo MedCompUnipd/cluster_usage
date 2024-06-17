@@ -52,6 +52,17 @@ The three most common cases of building a container are the following:
 
 Once the container is built and the `container_name.sif` image is created, the next step is how to correctly execute it using apptainer
 
+## Download pre-built containers
+There are repositories where developers make pre-built containers available for use. Two examples are cited below:
+* [Red Hat](https://quay.io/organization/biocontainers)
+* [Docker Hub](https://hub.docker.com/)
+Pre-built sifs can be downloaded from these repositories with one simple command:
+```bash
+singularity build <container_name.sif> docker://<sif tag from repository>
+```
+
+N.B. Running this command does not require root privileges.
+
 ## Executing a container
 The container must be un inside the cluster using apptainer, and in most cases the command which will be used is one of the following:
 * `apptainer run`: used to run a container with a predefined action or entry point. The container's definition file specifies the default action, such as a script or application that should be executed when the container is run
